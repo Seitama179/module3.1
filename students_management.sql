@@ -15,7 +15,7 @@ Address VARCHAR(50),
 Phone VARCHAR(20),
 Status BIT,
 Class_Id INT NOT NULL,
-FOREIGN KEY (Class_Id) REFERENCES Class (Class_ID)
+FOREIGN KEY (Class_Id) REFERENCES Classes (Class_ID)
 );
 
 CREATE TABLE Subject(
@@ -33,7 +33,7 @@ Mark FLOAT DEFAULT 0 CHECK ( Mark BETWEEN 0 AND 100),
 Exam_Times TINYINT DEFAULT 1,
 UNIQUE (Sub_Id, Student_Id),
 FOREIGN KEY (Sub_Id) REFERENCES Subject (Sub_Id),
-FOREIGN KEY (Student_Id) REFERENCES Student (Student_Id)
+FOREIGN KEY (Student_Id) REFERENCES Students (Student_Id)
  );
 
 INSERT INTO Classes
@@ -60,3 +60,28 @@ INSERT INTO Mark (Sub_Id, Student_Id, Mark, Exam_Times)
 VALUES (1, 1, 8, 1),
  (1, 2, 10, 2),
  (2, 1, 12, 1);
+ 
+ SELECT *
+FROM Students;
+
+SELECT *
+FROM Students
+WHERE Status = true;
+
+SELECT *
+FROM Subject
+WHERE Credit < 10;
+
+SELECT S.Student_Id, S.Student_Name, C.Class_Name
+FROM Students S join Classes C on S.Class_Id = C.Class_ID;
+
+SELECT S.Student_Id, S.Student_Name, C.Class_Name
+FROM Students S join Classes C on S.Class_Id = C.Class_ID
+WHERE C.Class_Name = 'A1';
+
+SELECT S.Student_Id, S.Student_Name, Sub.Sub_Name, M.Mark
+FROM Students S join Mark M on S.Student_Id = M.Student_Id join Subject Sub on M.Sub_Id = Sub.Sub_Id;
+
+SELECT S.Student_Id, S.Student_Name, Sub.Sub_Name, M.Mark
+FROM Students S join Mark M on S.Student_Id = M.Student_Id join Subject Sub on M.Sub_Id = Sub.Sub_Id
+WHERE Sub.Sub_Name = 'CF';
