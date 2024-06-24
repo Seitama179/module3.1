@@ -171,5 +171,132 @@ GROUP BY hd.ma_hop_dong, nv.ho_ten, kh.ho_ten, kh.so_dien_thoai, dv.ten_dich_vu,
 
 -- 13.	Hiển thị thông tin các Dịch vụ đi kèm được sử dụng nhiều nhất bởi các Khách hàng đã đặt phòng. 
 -- (Lưu ý là có thể có nhiều dịch vụ có số lần sử dụng nhiều như nhau).
+WITH service_usage AS (
+    SELECT 
+        dvdk.ma_dich_vu_di_kem,
+        dvdk.ten_dich_vu_di_kem,
+        SUM(hdct.so_luong) AS total_usage
+    FROM dich_vu_di_kem dvdk
+    JOIN hop_dong_chi_tiet hdct ON dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+    JOIN hop_dong hd ON hdct.ma_hop_dong = hd.ma_hop_dong
+    GROUP BY dvdk.ma_dich_vu_di_kem, dvdk.ten_dich_vu_di_kem
+),
+max_usage AS (
+    SELECT MAX(total_usage) AS max_total_usage
+    FROM service_usage
+)
+SELECT 
+    su.ma_dich_vu_di_kem,
+    su.ten_dich_vu_di_kem,
+    su.total_usage
+FROM 
+    service_usage su,
+    max_usage mu
+WHERE su.total_usage = mu.max_total_usage;
 
+-- 14.	Hiển thị thông tin tất cả các Dịch vụ đi kèm chỉ mới được sử dụng một lần duy nhất. 
+-- Thông tin hiển thị bao gồm ma_hop_dong, ten_loai_dich_vu, ten_dich_vu_di_kem, so_lan_su_dung 
+-- (được tính dựa trên việc count các ma_dich_vu_di_kem).
+select      
+    hd.ma_hop_dong as IDHopDong,
+    ldv.ten_loai_dich_vu as TenLoaiDichVu,
+    dvdk.ten_dich_vu_di_kem as TenDichVuDiKem,
+    hdct.so_luong as SoLanSuDung 
+from hop_dong hd 
+join dich_vu dv on hd.ma_dich_vu = dv.ma_dich_vu 
+join hop_dong_chi_tiet hdct on hd.ma_hop_dong = hdct.ma_hop_dong 
+join dich_vu_di_kem dvdk on hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem 
+join loai_dich_vu ldv on dv.ma_loai_dich_vu = ldv.ma_loai_dich_vu 
+where hdct.so_luong = 1 
+order by hd.ma_hop_dong;
+
+-- 15.	Hiển thi thông tin của tất cả nhân viên bao gồm ma_nhan_vien, ho_ten, ten_trinh_do, ten_bo_phan, so_dien_thoai, dia_chi 
+-- mới chỉ lập được tối đa 3 hợp đồng từ năm 2020 đến 2021.
+SELECT 
+    nv.ma_nhan_vien,
+    nv.ho_ten,
+    td.ten_trinh_do,
+    bp.ten_bo_phan,
+    nv.so_dien_thoai,
+    nv.dia_chi
+FROM nhan_vien nv
+JOIN trinh_do td ON nv.ma_trinh_do = td.ma_trinh_do
+JOIN bo_phan bp ON nv.ma_bo_phan = bp.ma_bo_phan
+JOIN hop_dong hd ON hd.ma_nhan_vien = nv.ma_nhan_vien
+		  AND hd.ngay_lam_hop_dong BETWEEN '2020-01-01' AND '2021-12-31'
+GROUP BY nv.ma_nhan_vien, nv.ho_ten, td.ten_trinh_do, bp.ten_bo_phan, nv.so_dien_thoai, nv.dia_chi
+HAVING COUNT(hd.ma_nhan_vien) <= 3;
+
+-- 16.	Xóa những Nhân viên chưa từng lập được hợp đồng nào từ năm 2019 đến năm 2021.
+ DELETE
+ FROM nhan_vien
+WHERE ma_nhan_vien NOT IN (
+    SELECT DISTINCT hd.ma_nhan_vien
+    FROM hop_dong hd
+    WHERE hd.ngay_lam_hop_dong BETWEEN '2019-01-01' AND '2021-12-31'
+);
+
+-- 17.	Cập nhật thông tin những khách hàng có ten_loai_khach từ Platinum lên Diamond, 
+-- chỉ cập nhật những khách hàng đã từng đặt phòng với Tổng Tiền thanh toán trong năm 2021 là lớn hơn 10.000.000 VNĐ.
+UPDATE khach_hang kh
+JOIN (
+    SELECT hd.ma_khach_hang, 
+           SUM(hd.tien_dat_coc + IFNULL(hdct.so_luong * dvdk.gia, 0)) AS tong_tien
+    FROM hop_dong hd
+    LEFT JOIN hop_dong_chi_tiet hdct ON hd.ma_hop_dong = hdct.ma_hop_dong
+    LEFT JOIN dich_vu_di_kem dvdk ON hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem
+    WHERE YEAR(hd.ngay_lam_hop_dong) = 2021
+    GROUP BY hd.ma_khach_hang
+    HAVING tong_tien > 10000000
+) AS khach_hang_rich ON kh.ma_khach_hang = khach_hang_rich.ma_khach_hang
+SET kh.ma_loai_khach = '1'
+WHERE kh.ma_loai_khach = '2';
+
+-- 18.	Xóa những khách hàng có hợp đồng trước năm 2016 (chú ý ràng buộc giữa các bảng).
+DELETE kh
+FROM khach_hang kh
+JOIN hop_dong hd ON kh.ma_khach_hang = hd.ma_khach_hang
+WHERE year(hd.ngay_lam_hop_dong) < 2016;
+
+-- 19.	Cập nhật giá cho các Dịch vụ đi kèm được sử dụng trên 10 lần trong năm 2019 lên gấp đôi.
+SET SQL_SAFE_UPDATES = 0;
+SELECT hdct.ma_dich_vu_di_kem
+FROM hop_dong_chi_tiet hdct
+JOIN hop_dong hd ON hdct.ma_hop_dong = hd.ma_hop_dong
+where year(hd.ngay_lam_hop_dong) = 2021
+group by hdct.ma_dich_vu_di_kem
+having count(*) > 10;
+update dich_vu_di_kem dvdk
+join (
+    select hdct.ma_dich_vu_di_kem
+    from hop_dong_chi_tiet hdct
+    join hop_dong hd on hdct.ma_hop_dong = hd.ma_hop_dong
+    where year(hd.ngay_lam_hop_dong) = 2021
+    group by hdct.ma_dich_vu_di_kem
+    having COUNT(*) > 10
+) as dvdk_update on dvdk.ma_dich_vu_di_kem = dvdk_update.ma_dich_vu_di_kem
+set dvdk.gia = dvdk.gia * 2;
+SET SQL_SAFE_UPDATES = 0;
+
+-- 20.	Hiển thị thông tin của tất cả các nhân viên và khách hàng có trong hệ thống, 
+-- thông tin hiển thị bao gồm id (ma_nhan_vien, ma_khach_hang), ho_ten, email, so_dien_thoai, ngay_sinh, dia_chi.
+SELECT 
+    ma_nhan_vien AS id,
+    ho_ten,
+    email,
+    so_dien_thoai,
+    ngay_sinh,
+    dia_chi
+FROM nhan_vien
+
+UNION
+
+SELECT 
+    ma_khach_hang AS id,
+    ho_ten,
+    email,
+    so_dien_thoai,
+    ngay_sinh,
+    dia_chi
+FROM khach_hang;
 
