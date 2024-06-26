@@ -1,0 +1,28 @@
+body {
+    font-family: Verdana, sans-serif;
+}
+header, footer {
+    padding: 10px;
+    color: white;
+    background-color: black;
+}
+section {
+    margin: 5px;
+    padding: 10px;
+    background-color: lightgray;
+}
+
+article {
+    margin: 5px;
+    padding: 10px;
+    background-color: white;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 5px;
+}

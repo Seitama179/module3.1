@@ -1,0 +1,117 @@
+/* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #4267B2;
+    color: white;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 30px;
+    margin-right: 10px;
+}
+
+.search-box {
+    padding: 5px;
+    border: none;
+    border-radius: 15px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    margin-left: 15px;
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
+.container {
+    display: flex;
+    margin-top: 60px; /* Để trống khoảng trống cho header cố định */
+}
+
+.sidebar {
+    width: 20%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+.left-sidebar {
+    border-right: 1px solid #ddd;
+}
+
+.right-sidebar {
+    border-left: 1px solid #ddd;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #4267B2;
+}
+
+.main-content {
+    width: 60%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.create-post {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.post-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4267B2;
+    color: white;
+    cursor: pointer;
+}
+
+.posts {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.posts h2 {
+    margin-top: 0;
+}

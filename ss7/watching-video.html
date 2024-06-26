@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Video Watching</title>
+    <link rel="stylesheet" href="style4.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">Logo</div>
+    </header>
+    <div class="head-link">
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Videos</a></li>
+                <li><a href="#">Liked Videos</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="content">
+        <aside class="left-content">
+            <ul>
+                <li>
+                    <a href="#" onclick="changeVideo('https://www.youtube.com/embed/FhTXpx_fOHM')">
+                        <img src="https://img.youtube.com/vi/FhTXpx_fOHM/mqdefault.jpg" alt="Video 1">
+                        Video 1
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="changeVideo('https://www.youtube.com/embed/-tKVN2mAKRI')">
+                        <img src="https://img.youtube.com/vi/-tKVN2mAKRI/mqdefault.jpg" alt="Video 2">
+                        Video 2
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="changeVideo('https://www.youtube.com/embed/8-lOIRA0dIo')">
+                        <img src="https://img.youtube.com/vi/8-lOIRA0dIo/mqdefault.jpg" alt="Video 3">
+                        Video 3
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="changeVideo('https://www.youtube.com/embed/XboWW0eNZ4s')">
+                        <img src="https://img.youtube.com/vi/XboWW0eNZ4s/mqdefault.jpg" alt="Video 4">
+                        Video 4
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="changeVideo('https://www.youtube.com/embed/g3pDjXI7dC4')">
+                        <img src="https://img.youtube.com/vi/g3pDjXI7dC4/mqdefault.jpg" alt="Video 5">
+                        Video 5
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <main class="right-content">
+            <iframe id="main-video" src="https://www.youtube.com/embed/FhTXpx_fOHM" frameborder="0" allowfullscreen></iframe>
+        </main>
+    </div>
+    <footer>
+        &copy; 2023 All rights reserved.
+    </footer>
+</div>
+<script>
+    function changeVideo(videoSrc) {
+        document.getElementById('main-video').src = videoSrc;
+    }
+</script>
+</body>
+</html>
